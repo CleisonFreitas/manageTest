@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Http\Resources\LivroResource;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -29,6 +30,26 @@ class Livros extends Model
      */
     public function indices(): HasMany
     {
-        return $this->hasMany(Indices::class,'livro_id');
+        return $this->hasMany(Indices::class, 'livro_id');
+    }
+
+    public function getRecords()
+    {
+        $livroQuery = Self::query();
+
+        $titulo = request()->input('titulo') ?? '';
+        $tituloIndice = request()->input('titulo_do_indice');
+
+        $livroQuery->where('titulo', 'like', '%' . $titulo . '%');
+
+        if ($tituloIndice) {
+            $livroQuery->orWhereHas('indices', function ($query) use ($tituloIndice) {
+                $query->where('titulo', 'like', '%' . $tituloIndice . '%');
+            });
+        }
+
+        $livros = $livroQuery->get();
+
+        return LivroResource::collection($livros);
     }
 }

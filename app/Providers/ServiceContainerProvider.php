@@ -7,6 +7,7 @@ use App\Classes\Services\Containers\LivroServiceContainer;
 use App\Classes\Services\Containers\UserServiceContainer;
 use App\Interfaces\AuthContract;
 use App\Interfaces\CreateUserContract;
+use App\Interfaces\ListLivrosContract;
 use App\Interfaces\Livros\CriarLivroContract;
 use Illuminate\Support\ServiceProvider;
 
@@ -29,7 +30,8 @@ class ServiceContainerProvider extends ServiceProvider
         });
         $this->app->bind(LivroServiceContainer::class, function ($app) {
             return new LivroServiceContainer(
-                $app->make(CriarLivroContract::class)
+                $app->make(CriarLivroContract::class),
+                $app->make(ListLivrosContract::class)
             );
         });
     }
